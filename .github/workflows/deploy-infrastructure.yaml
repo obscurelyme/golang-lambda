@@ -6,3 +6,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    steps:
+      - name: Log into AWS
+        run: echo "Logging into AWS..."
