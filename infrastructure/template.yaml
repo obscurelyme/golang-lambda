@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  LambdaName:
+    Description: Name of the lambda function
+    Type: String
+  LambdaRoleName:
+    Description: Name of the lambda function's role
+    Type: String
+  LambdaDescription:
+    Description: Description of the lambda function's purpose
+    Type: String
+  LambdaMemorySize:
+    Description: Total memory size of the lambda's runtime
+    Type: Number
+  LambdaTimeout:
+    Description: The maximum amount of time (in seconds) the Lambda allows a function to run before stopping it
+    Type: Number
+
+Resources:
+  GolangLambdaCloudWatchPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref GolangLambdaFunctionRole
+      PolicyName: GolangLambdaCloudWatchPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaName}:*"
+
+  GolangLambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${LambdaRoleName}
+      Description: Role for the Golang Lambda Function
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+
+  GolangLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${LambdaName}
+      Handler: bootstrap
+      MemorySize: !Sub ${LambdaMemorySize}
+      PackageType: Zip
+      Architectures:
+        - arm64
+      Runtime: provided.al2023
+      Role: !Ref GolangLambdaFunctionRole
+      Description: !Sub ${LambdaDescription}
+      Code:
+        S3Bucket: lambda-bucket
+        S3Key: !Sub ${LambdaName}.zip
+      Timeout: !Sub ${LambdaTimeout}
+      LoggingConfig:
+        LogFormat: JSON
+        LogGroup: !Sub /aws/lambda/${LambdaName}
