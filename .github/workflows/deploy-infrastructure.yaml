@@ -3,6 +3,9 @@ name: Deploy Infrastructure
 on:
   workflow_dispatch:
 
+env:
+  GLASS_VERSION: v0.0.2
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,8 +16,9 @@ jobs:
           repository: obscurelyme/glass
           token: ${{secrets.GLASS_GH_PAT}}
           path: .github/actions/glass
+          ref: ${{ env.GLASS_VERSION }}
 
       - name: Run Glass CLI
-        uses: ./github/actions/glass
+        uses: ./.github/actions/glass
         with:
           command: validate --infra infrastructure/template.yaml
