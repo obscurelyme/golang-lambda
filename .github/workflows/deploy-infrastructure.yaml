@@ -21,4 +21,5 @@ jobs:
       - name: Run Glass CLI
         uses: ./.github/actions/glass
         with:
+          token: ${{secrets.GLASS_GH_PAT}}
           command: validate --infra infrastructure/template.yaml
