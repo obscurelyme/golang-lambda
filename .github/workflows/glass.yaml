@@ -1,0 +1,35 @@
+name: Glass | Deployment Workflow
+
+on:
+  workflow_call:
+
+env:
+  GLASS_VERSION: v0.0.5
+  AWS_ROLE: arn:aws:iam::683497281432:role/github-oidc-role-Role-NtZAFHaKjamQ
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log into AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+          mask-aws-account-id: "true"
+
+      - name: Checkout glass
+        uses: actions/checkout@v4
+        with:
+          repository: obscurelyme/glass
+          token: ${{secrets.GLASS_GH_PAT}}
+          path: .github/actions/glass
+          ref: ${{ env.GLASS_VERSION }}
+
+      - name: Run Glass CLI
+        uses: ./.github/actions/glass
+        with:
+          token: ${{secrets.GLASS_GH_PAT}}
+          command: cfn validate --infra infrastructure/template.yaml
