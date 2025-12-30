@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  GLASS_VERSION: v0.0.2
+  GLASS_VERSION: v0.0.3
 
 jobs:
   deploy:
