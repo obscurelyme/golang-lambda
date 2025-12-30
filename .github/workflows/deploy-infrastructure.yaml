@@ -7,5 +7,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Log into AWS
-        run: echo "Logging into AWS..."
+      - uses: obscurelyme/glass@v0.0.2
+        with:
+          command: cfn validate --infra infrastructure/template.yaml

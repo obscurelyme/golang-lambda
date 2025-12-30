@@ -4,6 +4,9 @@ Parameters:
   LambdaName:
     Description: Name of the lambda function
     Type: String
+  LambdaPolicyPrefix:
+    Description: PascalCase prefix for any policies attached to the lambda's IAM role
+    Type: String
   LambdaRoleName:
     Description: Name of the lambda function's role
     Type: String
@@ -18,12 +21,12 @@ Parameters:
     Type: Number
 
 Resources:
-  GolangLambdaCloudWatchPolicy:
+  LambdaCloudWatchPolicy:
     Type: AWS::IAM::Policy
     Properties:
       Roles:
-        - !Ref GolangLambdaFunctionRole
-      PolicyName: GolangLambdaCloudWatchPolicy
+        - !Ref LambdaFunctionRole
+      PolicyName: !Sub "${LambdaPolicyPrefix}LambdaCloudWatchPolicy"
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -35,10 +38,10 @@ Resources:
             Resource:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaName}:*"
 
-  GolangLambdaFunctionRole:
+  LambdaFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${LambdaRoleName}
+      RoleName: !Sub "${LambdaRoleName}"
       Description: Role for the Golang Lambda Function
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -47,25 +50,25 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
-              Action:
-                - sts:AssumeRole
+            Action:
+              - sts:AssumeRole
 
-  GolangLambdaFunction:
+  LambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub ${LambdaName}
+      FunctionName: !Sub "${LambdaName}"
       Handler: bootstrap
-      MemorySize: !Sub ${LambdaMemorySize}
+      MemorySize: !Ref LambdaMemorySize
       PackageType: Zip
       Architectures:
         - arm64
       Runtime: provided.al2023
-      Role: !Ref GolangLambdaFunctionRole
-      Description: !Sub ${LambdaDescription}
+      Role: !Ref LambdaFunctionRole
+      Description: !Sub "${LambdaDescription}"
       Code:
         S3Bucket: lambda-bucket
-        S3Key: !Sub ${LambdaName}.zip
-      Timeout: !Sub ${LambdaTimeout}
+        S3Key: !Sub "${LambdaName}.zip"
+      Timeout: !Ref LambdaTimeout
       LoggingConfig:
         LogFormat: JSON
-        LogGroup: !Sub /aws/lambda/${LambdaName}
+        LogGroup: !Sub "/aws/lambda/${LambdaName}"

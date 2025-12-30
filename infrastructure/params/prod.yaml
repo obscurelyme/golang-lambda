@@ -1,4 +1,5 @@
 LambdaName: golang-test-function
+LambdaPolicyPrefix: GolangTestFunction
 LambdaRoleName: golang-test-function-role
 LambdaMemorySize: 128
 LambdaTimeout: 3
