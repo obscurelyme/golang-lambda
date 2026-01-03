@@ -1,0 +1,20 @@
+Stack:
+  Name: create-serverless-lambda-function-stack
+  Capabilities:
+    - CAPABILITY_NAMED_IAM
+
+Parameters:
+  LambdaName: create-serverless-lambda
+  LambdaDescription: Lambda function that is used to scaffold new lambda repositories as well and any necessary IAM roles and configurations.
+  LambdaPolicyPrefix: create-serverless-lambda
+  LambdaRoleName: create-serverless-lambda-role
+  LambdaMemorySize: 128
+  LambdaTimeout: 3
+
+Tags:
+  ProvisionedBy: Glass
+  Repository: obscurelyme/create-serverless-lambda
+  CreatedOn: 12-30-2025
+  BusinessConcern: DevOps
+  ManagedStack: create-serverless-lambda-function-stack
+  ManagedBy: Cloudformation

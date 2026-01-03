@@ -2,11 +2,17 @@ name: Glass | Deployment Workflow
 
 on:
   workflow_call:
-
-env:
-  GLASS_VERSION: v0.0.5
-  AWS_ROLE: arn:aws:iam::683497281432:role/github-oidc-role-Role-NtZAFHaKjamQ
-  AWS_REGION: us-east-1
+    inputs:
+      stack_action:
+        description: "Deployment action to take on the stack"
+        required: true
+        type: string
+      glass_version:
+        type: string
+        default: latest
+      aws_region:
+        type: string
+        default: us-east-1
 
 jobs:
   glass-deploy:
@@ -15,8 +21,8 @@ jobs:
       - name: Log into AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.OIDC_IAM_ROLE }}
+          aws-region: ${{ inputs.aws_region }}
           audience: sts.amazonaws.com
           mask-aws-account-id: "true"
 
@@ -26,10 +32,10 @@ jobs:
           repository: obscurelyme/glass
           token: ${{secrets.GLASS_GH_PAT}}
           path: .github/actions/glass
-          ref: ${{ env.GLASS_VERSION }}
+          ref: ${{ inputs.glass_version }}
 
       - name: Run Glass CLI
         uses: ./.github/actions/glass
         with:
           token: ${{secrets.GLASS_GH_PAT}}
-          command: cfn validate --infra infrastructure/template.yaml
+          command: cfn ${{inputs.stack_action}} --infra ./infrastructure --admin

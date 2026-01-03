@@ -2,10 +2,27 @@ name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
+    inputs:
+      stack_action:
+        description: "Deployment action to take on the stack"
+        required: true
+        default: "create"
+        type: choice
+        options:
+          - create
+          - update
+          - delete
 
 env:
-  GLASS_VERSION: v0.0.5
+  GOPRIVATE: github.com/obscurelyme/*
 
 jobs:
   deploy:
     uses: ./.github/workflows/glass.yaml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      stack_action: ${{ inputs.stack_action }}
+      glass_version: v0.0.14
+    secrets: inherit

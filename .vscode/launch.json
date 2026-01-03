@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Lambda Function (with event file)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/debug",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "args": ["-event", "${workspaceFolder}/cmd/debug/event.json"]
+        },
+        {
+            "name": "Debug Lambda Tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}",
+            "env": {}
+        }
+    ]
+}

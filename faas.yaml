@@ -1,3 +1,0 @@
-function:
-  runtime: provided.al2023
-  handler: main

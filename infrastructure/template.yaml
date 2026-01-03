@@ -37,6 +37,20 @@ Resources:
               - logs:PutLogEvents
             Resource:
               - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaName}:*"
+          # Ability to create any stack
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateStack
+            Resource:
+              - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+          # Only allow elevated role when using cloudformation and nothing else.
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: !ImportValue cloudformation-admin-service-role-Arn
+            Condition:
+              StringEquals:
+                iam:PassedToService: cloudformation.amazonaws.com
 
   LambdaFunctionRole:
     Type: AWS::IAM::Role
@@ -63,11 +77,11 @@ Resources:
       Architectures:
         - arm64
       Runtime: provided.al2023
-      Role: !Ref LambdaFunctionRole
+      Role: !GetAtt [LambdaFunctionRole, Arn]
       Description: !Sub "${LambdaDescription}"
       Code:
-        S3Bucket: lambda-bucket
-        S3Key: !Sub "${LambdaName}.zip"
+        S3Bucket: !ImportValue ServerlessLambdaDeploymentBucketName
+        S3Key: !Sub "${LambdaName}/bootstrap.zip"
       Timeout: !Ref LambdaTimeout
       LoggingConfig:
         LogFormat: JSON
