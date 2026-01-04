@@ -2,8 +2,6 @@ name: Deploy Function
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "v*"
 

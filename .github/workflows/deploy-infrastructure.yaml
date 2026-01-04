@@ -28,6 +28,7 @@ jobs:
       id-token: write
       contents: read
     uses: ./.github/workflows/first-time.yaml
+    secrets: inherit
 
   deploy:
     needs: first_time_setup
@@ -39,3 +40,4 @@ jobs:
     with:
       stack_action: ${{ inputs.stack_action }}
       glass_version: v0.0.15
+    secrets: inherit
