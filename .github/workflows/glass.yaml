@@ -18,6 +18,9 @@ jobs:
   glass-deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Log into AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
