@@ -12,17 +12,30 @@ on:
           - create
           - update
           - delete
+      first_time:
+        description: "Set to true to indicate that this is the first time this workflow is being run"
+        required: false
+        default: false
+        type: boolean
 
 env:
   GOPRIVATE: github.com/obscurelyme/*
 
 jobs:
-  deploy:
-    uses: ./.github/workflows/glass.yaml
+  first_time_setup:
+    if: ${{ inputs.first_time == true }}
     permissions:
       id-token: write
       contents: read
+    uses: ./.github/workflows/first-time.yaml
+
+  deploy:
+    needs: first_time_setup
+    if: ${{ !cancelled() }}
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/glass.yaml
     with:
       stack_action: ${{ inputs.stack_action }}
-      glass_version: v0.0.14
-    secrets: inherit
+      glass_version: v0.0.15
