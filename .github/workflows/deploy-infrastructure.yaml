@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      aws_region:
+        description: AWS region for infrastructure
+        required: false
+        default: us-east-1
+        type: string
 
 env:
   GOPRIVATE: github.com/obscurelyme/*
@@ -39,5 +44,5 @@ jobs:
     uses: ./.github/workflows/glass.yaml
     with:
       stack_action: ${{ inputs.stack_action }}
-      glass_version: v0.0.15
+      aws_region: ${{ inputs.aws_region }}
     secrets: inherit
